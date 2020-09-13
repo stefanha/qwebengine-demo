@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<html>
+    <head>
+        <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+        <script>
+            function startTimer() {
+                if (window.demo === undefined) {
+                    return;
+                }
+
+                var timeout = parseInt(document.getElementById("timeout").value);
+                window.demo.startTimer(timeout, function() {});
+            }
+
+            // Increment the counter
+            function timerExpired() {
+                var elem = document.getElementById("counter");
+                var n = parseInt(elem.innerText);
+                elem.innerText = n + 1;
+            }
+
+            var webChannel = new QWebChannel(qt.webChannelTransport, function(channel) {
+                channel.objects.demo.timerExpired.connect(timerExpired);
+
+                window.demo = channel.objects.demo;
+            });
+        </script>
+    </head>
+    <body>
+        <fieldset>
+            <legend>Set a QTimer</legend>
+            <label for="timeout">Timeout:</label>
+            <input type="text" id="timeout" value="5"></input>
+            <button onclick="startTimer()">Start timer</button>
+        </fieldset>
+        <p>Timer expired <span id="counter">0</span> times.</p>
+    </body>
+</html>
